@@ -6,16 +6,23 @@ include("php/verify.php");
 
 $nombre_exam = '';
 $dur_examen = 0;
+$cant_repeticiones = '';
+$ver_res_correc = '';
+$ver_res_incorrec = '';
 $id = '';
 $errormsg = '';
 if(isset($_POST['save']))
 {
 $nombre_exam = mysqli_real_escape_string($conn,$_POST['nombre_exam']);
 $dur_examen = mysqli_real_escape_string($conn,$_POST['dur_examen']);
+$cant_repeticiones = mysqli_real_escape_string($conn,$_POST['cant_repeticiones']);
+$ver_res_correc = mysqli_real_escape_string($conn,$_POST['ver_res_correc']);
+$ver_res_incorrec = mysqli_real_escape_string($conn,$_POST['ver_res_incorrec']);
 if($_POST['action']=="add")
 {
-
- $sql = $conn->query("INSERT INTO  examen (nombre_exam,dur_examen) VALUES ('$nombre_exam','$dur_examen')") ;
+// coreciones
+ $sql = $conn->query("INSERT INTO  examen (nombre_exam,dur_examen,cant_repeticiones,ver_res_correc,ver_res_incorrec) 
+                    VALUES ('$nombre_exam','$dur_examen','$cant_repeticiones','$ver_res_correc','$ver_res_incorrec')") ;
   echo '<script type="text/javascript">window.location="exam.php?act=1";</script>';
 }else
 if($_POST['action']=="update")
@@ -23,7 +30,7 @@ if($_POST['action']=="update")
 
 $id = mysqli_real_escape_string($conn,$_POST['id']);
 
-$sql = $conn->query("update examen set nombre_exam= '$nombre_exam', dur_examen = '$dur_examen' where id = '$id'") ;
+$sql = $conn->query("update examen set nombre_exam= '$nombre_exam', dur_examen = '$dur_examen', cant_repeticiones = '$cant_repeticiones', ver_res_correc = '$ver_res_correc', ver_res_incorrecta = '$ver_res_incorrec' where id = '$id'") ;
   echo '<script type="text/javascript">window.location="exam.php?act=2";</script>';
 
 
@@ -124,9 +131,30 @@ include("php/header.php");
                                 <label>Nombre examen</label>
                                 <input class="form-control" name="nombre_exam" value="<?php echo $nombre_exam;?>">
                                 <p class="help-block">Introdusca el nombre del examen</p>
+
                                 <label > Duracion examen</label>
-                                <input class="form-control" name="dur_examen" value="<?php echo $dur_examen;?>">
+                                <input class="form-control" type="text" name="dur_examen" value="<?php echo $dur_examen;?>" >
                                 <p class="help-block">Introduzca la duracion del examen</p>
+
+                                <label>Cantidad de repeticiones</label>
+                                <input class="form-control" name="cant_repeticiones" value="<?php echo $cant_repeticiones;?>">
+                                <p class="help-block">Introdusca cantidad de repeticiones</p>
+
+                                <label>Ver respuestas correctas</label> <br>                                                                   
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="materialChecked2" name="ver_res_correc" value="<?php echo $ver_res_correc = 'SI';?>">
+                                    <label class="form-check-label" for="materialChecked2">SI</label> <br>
+                                    <input type="radio" class="form-check-input" id="materialChecked2" name="ver_res_correc" value="<?php echo $ver_res_correc = 'NO';?>">
+                                    <label class="form-check-label" for="materialChecked2">NO</label>
+                                </div>
+
+                                <label>Ver respuestas incorrectas</label> <br>                                                                   
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="materialChecked2" name="ver_res_incorrec" value="<?php echo $ver_res_incorrec = 'SI';?>">
+                                    <label class="form-check-label" for="materialChecked2">SI</label> <br>
+                                    <input type="radio" class="form-check-input" id="materialChecked2" name="ver_res_incorrec" value="<?php echo $ver_res_incorrec = 'NO';?>">
+                                    <label class="form-check-label" for="materialChecked2">NO</label>
+                                </div>
 
                             </div>
                          <input type="hidden" name="action" value="<?php echo $action;?>">
@@ -180,6 +208,9 @@ include("php/header.php");
                                         <tr>
                                             <th>Nombre examen</th>
                                             <th>Duracion del examen</th>
+                                            <th>Cantidad de repeticiones</th>
+                                            <th>ver respuestas correctas</th>
+                                            <th>ver respuestas incorrectas</th>
                                             <th width="15%">Acciones</th>
                                             
                                         </tr>
@@ -190,13 +221,17 @@ include("php/header.php");
 								
 								$sql = $conn->query("select * from examen");
 								while($row = $sql->fetch_assoc())
-								{
-								
-								
+								{						
+                                    // 19/05/2019 recciones del primer sprint
+                                    // añadimos nuevos campor a la configuracion del examen
                                     echo '<tr>
                                        
                                         <td>'.$row['nombre_exam'].'</td>
                                         <td>'.$row['dur_examen'].'</td>
+                                        <td>'.$row['cant_repeticiones'].' </td>
+                                        <td>'.$row['ver_res_correc'].'</td>
+                                        <td>'.$row['ver_res_incorrec'].'</td>
+                                        
 										<td><a href="exam.php?action=edit&id='.$row['id'].'" class="btn btn-primary btn-xs">Editar</a>  &nbsp; <a  onclick="return confirm(\'¿Estas seguro de borrar este examen?\');"  href="exam.php?action=delete&id='.$row['id'].'" class="btn btn-danger btn-xs"  >Eliminar</a></td>
                                         
                                         </tr>';
